@@ -1,0 +1,29 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "Gameplay Location",
+	"Description": "Introduces FGameplayLocation and FGameplayLocationContainer. A GameplayLocation represents a generic 'description' to a location that can dynamically be resolved (on-demand) on the context object it carries.",
+	"Category": "From ubyte.dev",
+	"CreatedBy": "Lucas",
+	"CreatedByURL": "https://ubyte.dev",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": false,
+	"IsBetaVersion": true,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "GameplayLocationRuntime",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "GameplayLocationEditor",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
+		}
+	]
+}
