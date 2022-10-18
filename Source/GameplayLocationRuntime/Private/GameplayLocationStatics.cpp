@@ -6,18 +6,28 @@
 
 DEFINE_LOG_CATEGORY_STATIC(LogGameplayLocationManager, Log, All)
 
-bool UGameplayLocationStatics::ResolvesGameplayLocation(const TSoftClassPtr<UObject> Class, const FGameplayTagContainer GameplayTags)
-{
-	const UGameplayLocationSettings* Settings = GetDefault<UGameplayLocationSettings>();
-	check(Settings)
 
-	if (!GameplayTags.IsEmpty())
+bool UGameplayLocationStatics::ResolvesGameplayLocation(TSubclassOf<UObject> Class, FGameplayTagContainer GameplayTags, bool bIncludeSuper)
+{
+	if (Class.Get()) 
 	{
-		for (const UClass* ClassItr = Class->ClassWithin; ClassItr; ClassItr = ClassItr->GetSuperClass())
+		UE_VLOG_UELOG(GetDefault<UGameplayLocationStatics>(), LogGameplayLocationManager, Error, TEXT("%s failed. Provided Class is null."), __FUNCTIONW__);
+		return false;
+	}
+	
+	if (GameplayTags.IsEmpty())
+	{
+		return false;
+	}
+
+	const UGameplayLocationSettings* Settings = GetDefault<UGameplayLocationSettings>();
+	check(Settings);
+	
+	return TraverseClassHierarchyByPredicate(
+		[Settings, &GameplayTags](const UClass* ClassPtr) -> bool
 		{
-			if (const FGameplayLocationConfig* Config = Settings->ConfigMap.Find(ClassItr))
+			if (const FGameplayLocationConfig* Config = Settings->ConfigMap.Find(ClassPtr))
 			{
-				TArray<FGameplayTag> TagArray;
 				for (const FGameplayTag& GroupTag : Config->ImplementedGroups)
 				{
 					if (!GameplayTags.HasTag(GroupTag) || GameplayTags.HasTagExact(GroupTag))
@@ -28,34 +38,47 @@ bool UGameplayLocationStatics::ResolvesGameplayLocation(const TSoftClassPtr<UObj
 
 				return true;
 			}
-		}
-	}
-	
-	return false;
+
+			return false;
+		}, Class, bIncludeSuper);
 }
 
-bool UGameplayLocationStatics::ResolvesGameplayLocationDescendants(const TSoftClassPtr<> Class,
-	const FGameplayTagContainer GameplayTags)
+bool UGameplayLocationStatics::ResolvesGameplayLocationDescendants(TSubclassOf<UObject> Class, FGameplayTagContainer GameplayTags, bool bIncludeSuper)
 {
-	const UGameplayLocationSettings* Settings = GetDefault<UGameplayLocationSettings>();
-	check(Settings)
-
-	if (const FGameplayLocationConfig* Config = Settings->ConfigMap.Find(Class))
+	if (Class.Get()) 
 	{
-		return GameplayTags.HasAllExact(Config->ImplementedGroups);
+		UE_VLOG_UELOG(GetDefault<UGameplayLocationStatics>(), LogGameplayLocationManager, Error, TEXT("%s failed. Provided Class is null."), __FUNCTIONW__);
+		return false;
 	}
-
-	return false;
+	
+	if (GameplayTags.IsEmpty())
+	{
+		return false;
+	}
+	
+	const UGameplayLocationSettings* Settings = GetDefault<UGameplayLocationSettings>();
+	check(Settings);
+	
+	return TraverseClassHierarchyByPredicate(
+		[Settings, &GameplayTags](const UClass* ClassPtr) -> bool
+		{
+			if (const FGameplayLocationConfig* Config = Settings->ConfigMap.Find(ClassPtr))
+			{
+				return GameplayTags.HasAllExact(Config->ImplementedGroups);
+			}
+			
+			return false;
+		}, Class, bIncludeSuper);
 }
 
 FGameplayLocation UGameplayLocationStatics::K2_MakeOutgoingGameplayLocation(
-	const TScriptInterface<IGameplayLocationQuerier> GameplayLocationQuerier, FGameplayTag GameplayTag)
+	TScriptInterface<IGameplayLocationQuerier> GameplayLocationQuerier, FGameplayTag GameplayTag)
 {
 	return FGameplayLocation(GameplayLocationQuerier, GameplayTag);
 }
 
 FGameplayLocationContainer UGameplayLocationStatics::K2_MakeOutgoingGameplayLocationContainer(
-	const TScriptInterface<IGameplayLocationQuerier> GameplayLocationQuerier, FGameplayTagContainer GameplayTags)
+	TScriptInterface<IGameplayLocationQuerier> GameplayLocationQuerier, FGameplayTagContainer GameplayTags)
 {
 	return FGameplayLocationContainer(GameplayLocationQuerier, GameplayTags);
 }
@@ -88,3 +111,26 @@ bool UGameplayLocationStatics::IsValid_GameplayLocation(const FGameplayLocation&
 	return GameplayLocation.IsValid();
 }
 
+template <typename Predicate>
+bool UGameplayLocationStatics::TraverseClassHierarchyByPredicate(Predicate Pred, TSubclassOf<UObject> Class, bool bIncludeSuper)
+{
+	if (bIncludeSuper)
+	{
+		for (const UClass* ClassItr = Class.Get(); ClassItr; ClassItr = ClassItr->GetSuperClass())
+		{
+			if (Invoke(Pred, ClassItr))
+			{
+				return true;
+			}
+		}
+	}
+	else
+	{
+		if (Invoke(Pred, Class.Get()))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}

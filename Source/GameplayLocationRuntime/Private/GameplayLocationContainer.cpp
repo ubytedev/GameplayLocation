@@ -13,12 +13,9 @@ bool FGameplayLocation::IsValidSlow() const
 {
 	if (IsValid())
 	{
-		for (const UClass* Class = Querier->GetClass(); Class; Class = Class->GetSuperClass())
+		if (UGameplayLocationStatics::ResolvesGameplayLocation(Querier->GetClass(), GameplayTag.GetSingleTagContainer()))
 		{
-			if (UGameplayLocationStatics::ResolvesGameplayLocation(Class, GameplayTag.GetSingleTagContainer()))
-			{
-				return true;
-			}
+			return true;
 		}
 	}
 	
@@ -53,12 +50,9 @@ bool FGameplayLocationContainer::IsValidSlow() const
 {
 	if (IsValid())
 	{
-		for (const UClass* Class = Querier->GetClass(); Class; Class = Class->GetSuperClass())
+		if (UGameplayLocationStatics::ResolvesGameplayLocation(Querier->GetClass(), TagContainer))
 		{
-			if (UGameplayLocationStatics::ResolvesGameplayLocation(Class, TagContainer))
-			{
-				return true;
-			}
+			return true;
 		}
 	}
 

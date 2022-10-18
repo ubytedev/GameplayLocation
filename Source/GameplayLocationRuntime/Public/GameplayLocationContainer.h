@@ -11,7 +11,7 @@
 class IGameplayLocationQuerier;
 struct FGameplayTag;
 
-DECLARE_LOG_CATEGORY_EXTERN(LogGameplayLocation, Log, All);
+GAMEPLAYLOCATIONRUNTIME_API DECLARE_LOG_CATEGORY_EXTERN(LogGameplayLocation, Log, All);
 
 USTRUCT(BlueprintType)
 struct FGameplayLocation

@@ -13,14 +13,14 @@ public class GameplayLocationRuntime : ModuleRules
 			{
 				"Core",
 				"CoreUObject",
-				"GameplayTags"
+				"GameplayTags",
 			}
 			);
 		
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Engine"
+				"Engine",
 			}
 			);
 	}

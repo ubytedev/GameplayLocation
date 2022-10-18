@@ -1,4 +1,4 @@
-//
+// Copyright ubyte digital. All Right Reserved. https://ubyte.dev
 
 #include "GameplayLocationEditorSubsystem.h"
 #include "GameplayLocationSettings.h"
