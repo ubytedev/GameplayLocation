@@ -85,6 +85,6 @@ public:
 protected:
 	/** Internal helper function */
 	template <typename Predicate>
-	GAMEPLAYLOCATIONRUNTIME_API static bool TraverseClassHierarchyByPredicate(Predicate Pred, TSubclassOf<UObject> Class, bool bIncludeSuper = true);
+	static bool TraverseClassHierarchyByPredicate(Predicate Pred, TSubclassOf<UObject> Class, bool bIncludeSuper = true);
 };
 
