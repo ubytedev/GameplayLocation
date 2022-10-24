@@ -9,7 +9,7 @@ DEFINE_LOG_CATEGORY_STATIC(LogGameplayLocationManager, Log, All)
 
 bool UGameplayLocationStatics::ResolvesGameplayLocation(TSubclassOf<UObject> Class, FGameplayTagContainer GameplayTags, bool bIncludeSuper)
 {
-	if (Class.Get()) 
+	if (!Class.Get()) 
 	{
 		UE_VLOG_UELOG(GetDefault<UGameplayLocationStatics>(), LogGameplayLocationManager, Error, TEXT("%s failed. Provided Class is null."), __FUNCTIONW__);
 		return false;
@@ -45,7 +45,7 @@ bool UGameplayLocationStatics::ResolvesGameplayLocation(TSubclassOf<UObject> Cla
 
 bool UGameplayLocationStatics::ResolvesGameplayLocationDescendants(TSubclassOf<UObject> Class, FGameplayTagContainer GameplayTags, bool bIncludeSuper)
 {
-	if (Class.Get()) 
+	if (!Class.Get()) 
 	{
 		UE_VLOG_UELOG(GetDefault<UGameplayLocationStatics>(), LogGameplayLocationManager, Error, TEXT("%s failed. Provided Class is null."), __FUNCTIONW__);
 		return false;
